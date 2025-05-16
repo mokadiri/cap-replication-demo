@@ -31,11 +31,21 @@ async function getEntityFromS4(s4api, bp) {
   return s4entity;
 }
 
-async function getEntitiesFromS4(s4api, s4entityName, limit, columns) {
+async function getEntitiesFromS4(s4api, s4entityName, limit, columns, filter) {
   let query = SELECT(`${s4entityName}`).limit(limit.rows, limit.offset);
   if (columns) {
     query = query.columns(columns);
+
   }
+  
+  if(filter) {
+    //Read fields for S4entityName from s4api.entities
+
+    //Check if the subelement of filter is matching a fields of the entity
+    //When it's match the query should be filtered
+    
+  }
+
   const s4entity = await s4api.run(query);
   return s4entity;
 }
@@ -87,7 +97,8 @@ module.exports = cds.service.impl(async function () {
           s4api,
           map.s4entityName,
           limit,
-          map.columns
+          map.columns,
+          filter
         );
         LOG.info("Number of Entities:", s4entities.length);
         for (let index = 0; index < s4entities.length; index++) {

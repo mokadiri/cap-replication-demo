@@ -40,10 +40,28 @@ async function getEntitiesFromS4(s4api, s4entityName, limit, columns, filter) {
   
   if(filter) {
     //Read fields for S4entityName from s4api.entities
+    let entity = s4api.entities[s4entityName];
+    let Entityfields = Object.keys(s4api.entities[s4entityName].elements);
+    let filteredEntities = SELECT.from(s4entityName).where(filter);
+    let filterFields = Object.keys(filter);
+    for (let fieldName of filterFields) {
+    if (Entityfields.includes(fieldName)) {
+      console.log(`✅ ${fieldName} ist gültig`);
+      
+    let filterConditions = filter[fieldName]?.in || [];   
+    query = SELECT.from(s4entityName).where({ [fieldName] : { in: filterConditions } });
+    console.log(query.toString());
+    let result = await s4api.run(query);    
+    entity = s4api.entities[s4entityName];
+    } else {
+      console.warn(`❌ ${fieldName} existiert NICHT in ${s4entityName}`);
+    }
+  }
 
+    entity = s4api.entities[s4entityName];
     //Check if the subelement of filter is matching a fields of the entity
     //When it's match the query should be filtered
-    
+
   }
 
   const s4entity = await s4api.run(query);
